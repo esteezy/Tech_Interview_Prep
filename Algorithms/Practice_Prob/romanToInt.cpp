@@ -1,52 +1,57 @@
-//Given a signed 32-bit integer x, return x with its digits reversed. 
-//If reversing x causes the value to go outside the signed 32-bit integer range [-231, 231 - 1], then return 0.
+// Given a string s containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid.
+
+// An input string is valid if:
+
+// Open brackets must be closed by the same type of brackets.
+// Open brackets must be closed in the correct order.
+ 
 
 // Example 1:
 
-// Input: x = 123
-// Output: 321
-// Example 2:
-
-// Input: x = -123
-// Output: -321
+// Input: s = "()"
+// Output: true
 
 #include "vector"
 #include <iostream>
 #include <stdlib.h>
 #include <unordered_map>
+#include <stack>
 
 using namespace std;
 
-//input: signed 32-bit int
-    //output: signed 32-bit int, reverse order
-    //option 1: 
-    //  - x%10 = get last pos digit
-    //  - rev = rev*10 + (x%10);
-    //  - get next digit in x: x=x/10;
-    //  - repeat till x != 0
-    //  check for overflow:
-    //      - rev > INT_MAX / 10
-    //      - rev < INT_MIN / 10
-    
-    int reverse(int x) {
-        int rev = 0, temp;
-        while(x != 0){
-            //get last digit
-            temp = x%10;
-            //check for overflow
-            if(rev > (INT_MAX / 10)){ return 0;}
-            if(rev < (INT_MIN / 10)){ return 0;}
-            //add to rev
-            rev = rev * 10 + temp;
-            //update x
-            x = x/10;
+//input: string of: '(', ')', '{', '}', '[' and ']'
+//output: T/F valid parens
+//option 1:
+//  - use stack to keep record of chars in s
+//  - move l->r pushing chars to stack
+//  - if curr char is complement of bottom stack char
+//      - then pop char from stack
+// if at end stack is empty -> s is valid
+
+bool isValid(string s) {
+    //courtesy check
+    if(s.empty()){ return false; }
+
+    stack<char> record;
+    for(int i = 0; i<s.size(); i++){
+        //check for closing comp
+        if(s[i]==')' || s[i]=='}' || s[i]==']'){
+            if(record.size() == 0){ return false; }
+            if(s[i]==')' && record.top() != '('){ return false; }
+            if(s[i]=='}' && record.top() != '{'){ return false; }
+            if(s[i]==']' && record.top() != '['){ return false; }
+            record.pop();
         }
-        return rev;
+        else{
+            record.push(s[i]);
+        }
     }
+    if(record.empty()){ return true; }
+    return false;    
+}
 
 int main(){
-    int temp;
-    std::cin >> temp;
-    cout << reverse(temp);
+    string temp;
+    cout << isValid(temp);
     return 0;
 }
